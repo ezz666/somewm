@@ -151,6 +151,7 @@ end
 -- @return DPI value as number (defaults to 96)
 function xresources.get_dpi()
   local dpi = xresources.get_value("", "Xft.dpi")
+  print(("Xft.dpi=%s"):format(dpi))
   return tonumber(dpi) or 96
 end
 
@@ -169,6 +170,7 @@ function xresources.apply_theme(beautiful)
 
   -- Apply DPI
   beautiful.xresources_dpi = xresources.get_dpi()
+  print(("xresources_dpi=%d"):format(beautiful.xresources_dpi))
 
   return colors
 end

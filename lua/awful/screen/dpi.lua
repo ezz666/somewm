@@ -27,6 +27,7 @@ local function get_fallback_dpi()
         local _, hmm = root.size_mm()
         fallback_dpi = hmm ~= 0 and h * mm_per_inch / hmm
     end
+    print(("fallback_dpi=%d"):format(fallback_dpi))
 
     return fallback_dpi or 96
 end
@@ -35,14 +36,20 @@ local function dpi_for_output(viewport, output)
     local dpi = nil
     local geo = viewport.geometry
 
+    print(output.name, "dpi_for_output")
+    print(("Physical size: %d x %d mm"):format(output.mm_width, output.mm_height))
+    print(("Geometry: %d x %d"):format(geo.width, geo.height))
     -- Ignore outputs with width/height 0
     if output.mm_width ~= 0 and output.mm_height ~= 0 then
         local dpix = geo.width * mm_per_inch / output.mm_width
         local dpiy = geo.height * mm_per_inch / output.mm_height
         dpi = math.min(dpix, dpiy, dpi or dpix)
+        print(("DPI by physical size: %d"):format(dpi))
     elseif ascreen._get_xft_dpi() then
         dpi = ascreen._get_xft_dpi()
+        print(("DPI by xft: %s"):format(tostring(dpi)))
     end
+    print(output.name, ("DPI: %s"):format(tostring(dpi)))
 
     return dpi or get_fallback_dpi()
 end
@@ -64,6 +71,7 @@ local function dpis_for_outputs(viewport)
             max_size    = math.max(max_size, o.mm_size)
             min_size    = math.min(min_size, o.mm_size)
         end
+        print("dpis_for_outputs", o.name, ("DPI: %s"):format(tostring(dpi)))
     end
 
     -- When there is no output.
@@ -106,6 +114,7 @@ local function dpis_for_outputs(viewport)
     viewport.inch_minimum_size = min_size/mm_per_inch
     viewport.inch_maximum_size = max_size/mm_per_inch
 
+    print("dpis_for_outputs", ("DPI: max=%s, min=%s, pref=%s"):format(tostring(max_dpi), tostring(min_dpi), tostring(pref_dpi)))
     return max_dpi, min_dpi, pref_dpi
 end
 
